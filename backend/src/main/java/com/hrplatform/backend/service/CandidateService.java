@@ -52,7 +52,7 @@ public class CandidateService {
     }
 
     public CandidateSessionView startSession(String token) {
-        CandidateSession session = findSessionByToken(token);
+        CandidateSession session = lockSessionByToken(token);
 
         if (session.getStatus() != SessionStatus.PENDING) {
             throw new BadRequestException("Session is already " + session.getStatus());
@@ -66,7 +66,7 @@ public class CandidateService {
     }
 
     public SubmitResponse submitAnswers(String token, SubmitRequest request) {
-        CandidateSession session = findSessionByToken(token);
+        CandidateSession session = lockSessionByToken(token);
 
         if (session.getStatus() != SessionStatus.IN_PROGRESS) {
             throw new BadRequestException("Session is not in progress");
@@ -164,6 +164,13 @@ public class CandidateService {
 
     private CandidateSession findSessionByToken(String token) {
         return sessionRepository.findByInviteToken(token)
+                .orElseThrow(() -> new ResourceNotFoundException("Session not found"));
+    }
+
+    // Row lock held until the transaction commits, so a concurrent start/submit for the same
+    // token waits and then sees the updated status.
+    private CandidateSession lockSessionByToken(String token) {
+        return sessionRepository.findByInviteTokenForUpdate(token)
                 .orElseThrow(() -> new ResourceNotFoundException("Session not found"));
     }
 
