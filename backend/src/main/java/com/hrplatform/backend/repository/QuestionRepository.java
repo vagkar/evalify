@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findAllByAssessmentIdOrderByOrderIndexAsc(Long assessmentId);
+    long countByAssessmentId(Long assessmentId);
     Optional<Question> findByIdAndAssessmentId(Long id, Long assessmentId);
     Optional<Question> findByIdAndAssessmentCompanyId(Long id, Long companyId);
 }

@@ -35,11 +35,15 @@ public class CandidateService {
         CandidateSession session = findSessionByToken(token);
         Assessment assessment = session.getAssessment();
 
-        List<CandidateQuestionView> questions = questionRepository
-                .findAllByAssessmentIdOrderByOrderIndexAsc(assessment.getId())
-                .stream()
-                .map(this::toQuestionView)
-                .toList();
+        long questionCount = questionRepository.countByAssessmentId(assessment.getId());
+
+        // Question content is only exposed while the timer is running.
+        List<CandidateQuestionView> questions = session.getStatus() == SessionStatus.IN_PROGRESS
+                ? questionRepository.findAllByAssessmentIdOrderByOrderIndexAsc(assessment.getId())
+                        .stream()
+                        .map(this::toQuestionView)
+                        .toList()
+                : List.of();
 
         return new CandidateSessionView(
                 session.getId(),
@@ -47,6 +51,7 @@ public class CandidateService {
                 assessment.getDurationMinutes(),
                 session.getStatus(),
                 session.getStartedAt(),
+                questionCount,
                 questions
         );
     }
