@@ -57,6 +57,10 @@ public class CandidateService {
         if (session.getStatus() != SessionStatus.PENDING) {
             throw new BadRequestException("Session is already " + session.getStatus());
         }
+        // Only new starts are blocked: a session already in progress may still be submitted.
+        if (!session.getAssessment().getIsActive()) {
+            throw new BadRequestException("This assessment is no longer accepting responses");
+        }
 
         session.setStatus(SessionStatus.IN_PROGRESS);
         session.setStartedAt(Instant.now());

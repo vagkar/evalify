@@ -93,6 +93,7 @@ function updateAnswer(questionId, text) {
         :session="session"
         :total-count="totalCount"
         :loading="loading"
+        :error="error"
         @start="handleStart"
       />
 
