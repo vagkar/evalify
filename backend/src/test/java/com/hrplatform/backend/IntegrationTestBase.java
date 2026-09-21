@@ -1,6 +1,7 @@
 package com.hrplatform.backend;
 
 import com.hrplatform.backend.service.EmailService;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
@@ -12,6 +13,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
  * request ever reaches Resend.
  */
 @SpringBootTest
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Import(TestcontainersConfiguration.class)
 public abstract class IntegrationTestBase {
