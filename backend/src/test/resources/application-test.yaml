@@ -1,0 +1,7 @@
+# Test-only overrides. The datasource is provided by TestcontainersConfiguration
+# via @ServiceConnection, so no local database or real secrets are needed.
+app:
+  jwt:
+    secret: test-secret-key-for-integration-tests-only-0123456789
+
+RESEND_API_KEY: re_test_dummy_key

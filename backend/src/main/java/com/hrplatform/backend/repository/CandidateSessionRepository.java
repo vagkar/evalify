@@ -2,7 +2,9 @@ package com.hrplatform.backend.repository;
 
 import com.hrplatform.backend.model.dto.assessment.AssessmentStatsRow;
 import com.hrplatform.backend.model.entity.CandidateSession;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,6 +14,14 @@ import java.util.Optional;
 
 public interface CandidateSessionRepository extends JpaRepository<CandidateSession, Long> {
     Optional<CandidateSession> findByInviteToken(String inviteToken);
+
+    /**
+     * SELECT ... FOR UPDATE on the session row. Used by state transitions (start, submit) so
+     * concurrent requests for the same token are serialised and see each other's status.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT cs FROM CandidateSession cs WHERE cs.inviteToken = :inviteToken")
+    Optional<CandidateSession> findByInviteTokenForUpdate(@Param("inviteToken") String inviteToken);
     List<CandidateSession> findAllByAssessmentId(Long assessmentId);
 
     @Query("""

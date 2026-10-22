@@ -6,6 +6,7 @@ defineProps({
   session: { type: Object, required: true },
   totalCount: { type: Number, required: true },
   loading: { type: Boolean, default: false },
+  error: { type: String, default: null },
 })
 const emit = defineEmits(['start'])
 </script>
@@ -43,6 +44,7 @@ const emit = defineEmits(['start'])
         <span v-if="loading" class="spinner" />
         ▶ Begin assessment
       </button>
+      <p v-if="error" class="error-text">{{ error }}</p>
       <p class="mono intro-note">YOUR ANSWERS ARE AUTO-SAVED</p>
     </div>
   </div>

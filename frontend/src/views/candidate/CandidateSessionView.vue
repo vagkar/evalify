@@ -16,13 +16,14 @@ const error = ref(null)
 const loading = ref(false)
 const currentIdx = ref(0)
 
-const totalCount = computed(() => session.value?.questions.length ?? 0)
+const totalCount = computed(() => session.value?.questionCount ?? 0)
 
 onMounted(async () => {
   try {
     const res = await getSession(token)
     session.value = res.data
-    initAnswers()
+    // Questions are only returned once the session is in progress (e.g. after a reload).
+    if (session.value.status === 'IN_PROGRESS') initAnswers()
   } catch {
     error.value = 'Session not found or the link has expired.'
   }
@@ -39,6 +40,7 @@ async function handleStart() {
   try {
     const res = await startSession(token)
     session.value = res.data
+    initAnswers()
   } catch (e) {
     error.value = e.response?.data?.message || 'Failed to start session'
   } finally {
@@ -93,6 +95,7 @@ function updateAnswer(questionId, text) {
         :session="session"
         :total-count="totalCount"
         :loading="loading"
+        :error="error"
         @start="handleStart"
       />
 

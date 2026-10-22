@@ -33,7 +33,7 @@ public class Assessment {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "duration_minutes")
+    @Column(name = "duration_minutes", nullable = false)
     private Integer durationMinutes;
 
     @Column(name = "is_active", nullable = false)
